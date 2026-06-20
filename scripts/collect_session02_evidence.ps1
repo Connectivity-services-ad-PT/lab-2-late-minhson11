@@ -23,6 +23,22 @@ Write-Host "[Lab02] Running Spectral lint..."
 spectral lint openapi.yaml --ruleset campus-spectral.yaml --format text | Out-File -Encoding utf8 evidence\buoi-02\spectral-report.txt
 
 Write-Host "[Lab02] Collecting git log..."
-git log --oneline -n 10 | Out-File -Encoding utf8 evidence\buoi-02\git-log.txt
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    if (Test-Path "C:\Program Files\Git\cmd\git.exe") {
+        $gitCmd = "C:\Program Files\Git\cmd\git.exe"
+    } elseif (Test-Path "C:\Program Files (x86)\Git\cmd\git.exe") {
+        $gitCmd = "C:\Program Files (x86)\Git\cmd\git.exe"
+    } else {
+        $gitCmd = $null
+    }
+} else {
+    $gitCmd = "git"
+}
+
+if ($gitCmd) {
+    & $gitCmd log --oneline -n 10 | Out-File -Encoding utf8 evidence\buoi-02\git-log.txt
+} else {
+    "Git is not installed or not in PATH. Could not collect git log." | Out-File -Encoding utf8 evidence\buoi-02\git-log.txt
+}
 
 Write-Host "[Lab02] Done. Evidence saved to evidence/buoi-02/"
